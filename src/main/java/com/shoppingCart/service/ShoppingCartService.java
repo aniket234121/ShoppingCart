@@ -33,6 +33,13 @@ public class ShoppingCartService {
     public void clearCart() {
         cartRepo.clearCart();
     }
+    public boolean isItemInCart(String name){
+      if( cartRepo.getCart().stream().filter(item->item.getName().equals(name)).findAny().orElse(null)==null)
+      {
+          return false;
+      }
+      return true;
+    }
 
     public List<Product> getCartItems() {
         return cartRepo.getCart();

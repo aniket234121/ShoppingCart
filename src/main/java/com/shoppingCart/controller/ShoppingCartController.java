@@ -47,9 +47,9 @@ public class ShoppingCartController {
     private void addProduct() {
         System.out.print("Enter product name: ");
         String name = InputValidator.getValidName(scanner,scanner.nextLine());
-        if(cartService.getCartItems().stream().filter(item->item.getName().equals(name))!=null)
+        if(cartService.isItemInCart(name))
         {
-            System.out.println("item already in cart");
+            System.out.println("Product is already in cart");
             return;
         }
         System.out.print("Enter product price: ");
@@ -86,6 +86,7 @@ public class ShoppingCartController {
                 System.out.println(serial++ + ". " + product);
             }
         }
+        System.out.println();
         return true;
     }
 
