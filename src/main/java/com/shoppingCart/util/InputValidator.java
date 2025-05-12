@@ -12,7 +12,7 @@ public class InputValidator {
             if (name.isEmpty()) {
                 System.out.println("Name cannot be empty.");
             }
-            Pattern pt=Pattern.compile("^[A-Za-z][A-Za-z0-9]{2,19}$");
+            Pattern pt=Pattern.compile("^[A-Za-z][A-Za-z0-9 ]{2,19}$");
             matcher=pt.matcher(name);
             if(!matcher.matches()){
                 System.out.println("enter valid name");
