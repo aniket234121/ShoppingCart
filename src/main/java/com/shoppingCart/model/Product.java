@@ -45,7 +45,7 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return name + " | Price: $" + price + " | Quantity: " + quantity + " | Total: $" + getTotalPrice();
+        return name + " | Price:"+'\u20B9'+ price + " | Quantity: " + quantity + " | Total: " +'\u20B9'+ getTotalPrice();
     }
 }
 
