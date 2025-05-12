@@ -5,6 +5,8 @@ import java.util.Scanner;
 import com.shoppingCart.model.Product;
 import com.shoppingCart.service.ShoppingCartService;
 import com.shoppingCart.repository.CartRepository;
+import com.shoppingCart.util.InputValidator;
+
 public class ShoppingCartController {
     private final ShoppingCartService cartService;
     private final Scanner scanner;
@@ -12,67 +14,82 @@ public class ShoppingCartController {
     public ShoppingCartController() {
         this.cartService = new ShoppingCartService(new CartRepository());
         this.scanner = new Scanner(System.in);
+
     }
 
     public void start() {
         int choice;
         do {
-            System.out.println("\nOptions:");
             System.out.println("1. Add Product");
             System.out.println("2. Remove Product");
             System.out.println("3. Display Cart");
             System.out.println("4. Get Cart Amount");
-            System.out.println("5. Exit");
-            System.out.print("Please choose an option: ");
+            System.out.println("5. Clear Cart");
+            System.out.println("6. Exit");
 
-            choice = Integer.parseInt(scanner.nextLine());
+
+            choice = InputValidator.getValidOption(scanner,1,6);
             switch (choice) {
-                case 1 -> addProductFlow();
-                case 2 -> removeProductFlow();
-                case 3 -> displayCartFlow();
-                case 4 -> displayAmountFlow();
-                case 5 -> System.out.println("Thank you for shopping!");
+                case 1 -> addProduct();
+                case 2 -> removeProduct();
+                case 3 -> displayCart();
+                case 4 -> displayAmount();
+                case 5 -> {
+                    cartService.clearCart();
+                    System.out.println("Cart has been cleared.");
+                }
+                case 6 -> System.out.println("Thank you for shopping!");
                 default -> System.out.println("Invalid choice.");
             }
-        } while (choice != 5);
+        } while (choice != 6);
     }
 
-    private void addProductFlow() {
+    private void addProduct() {
         System.out.print("Enter product name: ");
-        String name = scanner.nextLine();
+        String name = InputValidator.getValidName(scanner,scanner.nextLine());
+        if(cartService.getCartItems().stream().filter(item->item.getName().equals(name))!=null)
+        {
+            System.out.println("item already in cart");
+            return;
+        }
         System.out.print("Enter product price: ");
-        double price = Double.parseDouble(scanner.nextLine());
+        double price =InputValidator.getValidPrice(scanner);
         System.out.print("Enter product quantity: ");
-        int qty = Integer.parseInt(scanner.nextLine());
+        int qty =InputValidator.getValidQuantity(scanner);
 
         Product product = new Product(name, price, qty);
         cartService.addProduct(product);
         System.out.println("Product added to cart!");
     }
 
-    private void removeProductFlow() {
-        System.out.print("Enter product name to remove: ");
-        String name = scanner.nextLine();
-        if (cartService.removeProduct(name)) {
-            System.out.println("Product removed from cart!");
-        } else {
-            System.out.println("Product not found.");
-        }
-    }
+    private void removeProduct() {
 
-    private void displayCartFlow() {
-        List<Product> cart = cartService.getCartItems();
-        if (cart.isEmpty()) {
-            System.out.println("Cart is empty.");
-        } else {
-            int i = 1;
-            for (Product product : cart) {
-                System.out.println(i++ + ". " + product);
+        if(displayCart()){
+            System.out.print("Enter product name to remove: ");
+            String name = scanner.nextLine();
+            if (cartService.removeProduct(name)) {
+                System.out.println("Product removed from cart!");
+            } else {
+                System.out.println("Product not found.");
             }
         }
     }
 
-    private void displayAmountFlow() {
+    private boolean displayCart() {
+        List<Product> cart = cartService.getCartItems();
+        if (cart.isEmpty()) {
+            System.out.println("Cart is empty.");
+            return false;
+        } else {
+            int serial = 1;
+            for (Product product : cart) {
+                System.out.println(serial++ + ". " + product);
+            }
+        }
+        return true;
+    }
+
+    private void displayAmount() {
         double total = cartService.getCartAmount();
         System.out.println("Total cart amount: " + total+'\u20B9');
     }
